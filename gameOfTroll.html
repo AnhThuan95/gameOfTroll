@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GAME OF TROLL</title>
+</head>
+<style>
+    body {
+        background-image: url("images/background1.jpg");
+    }
+
+    div {
+        position: absolute;
+        width: 200px;
+        color: gold;
+        left: 30px;
+    }
+
+    #playButton, #stopButton {
+        color: chocolate;
+        font-size: larger;
+    }
+
+    #img1 {
+        position: fixed;
+        left: 360px;
+        top: 140px;
+    }
+
+    #img2 {
+        position: fixed;
+        left: 301px;
+        top: 87px;
+    }
+</style>
+<body>
+
+<h2 style="position: relative; left: 490px; width: 324px; background: gold">&nbsp;TRÒ CHƠI VƯƠNG QUYỀN</h2>
+<br/>
+<div>
+    <input id="playButton" type="button" value="Play!" onclick="play()">
+</div>
+
+<div style="top: 150px">
+    <h4>Your Points</h4>
+    <p id="point">0</p>
+</div>
+
+<div style="top: 250px">
+    <h4>Your Times</h4>
+    <p id="time">10</p>
+</div>
+
+<div style="top: 400px">
+    <canvas id="newCanvas" width="200px" height="200px"></canvas>
+</div>
+
+<img src="images/background.jpg" id="img1" width="600" height="400">
+<img src="images/background2.jpg" id="img2" width="702" height="502">
+
+<canvas onmouseup="mouseUp()" onmousedown="mouseDown()" id="myCanvas" width="700px" height="500px"
+        style="border:3px solid #eaaa28;position: absolute; left: 300px;cursor: url(images/hammer1.png),auto"></canvas>
+
+<script>
+    let ran;
+    let point = 0;
+    let count = 10;
+
+    function countTime() {
+        count--;
+        document.getElementById("time").innerHTML = count;
+        if (count > 0) {
+            setTimeout(countTime, 1000);
+        }
+    }
+
+    function mouseUp() {
+        document.getElementById("myCanvas").style = "border:3px solid #eaaa28;position: absolute; left: 300px;cursor: url(images/hammer1.png),auto";
+    }
+
+    function mouseDown() {
+        document.getElementById("myCanvas").style = "border:3px solid #eaaa28;position: absolute; left: 300px;cursor: url(images/hammer2.png),auto";
+    }
+
+    function createCircle(x, y, color) {
+        let ctx = document.getElementById("myCanvas").getContext("2d");
+        let radius = 35;
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    function disappear(canv) {
+        let ctx = document.getElementById(canv).getContext("2d");
+        ctx.clearRect(0, 0, 700, 500);
+    }
+
+    let arr = [
+        [150, 100], [150, 250], [150, 400],
+        [350, 100], [350, 250], [350, 400],
+        [550, 100], [550, 250], [550, 400]
+    ];
+
+    function createBackground() {
+        for (let i = 0; i < arr.length; i++) {
+            createCircle(arr[i][0], arr[i][1], "#d2db15");
+        }
+    }
+
+    function myCanvas(canv, image) {
+        let ctx = document.getElementById(canv).getContext("2d");
+        let img = document.getElementById(image);
+        ctx.drawImage(img, 0, 0);
+    }
+
+    function createBallBall() {
+        ran = Math.floor(Math.random() * 9);
+        createCircle(arr[ran][0], arr[ran][1], "#5dd1db");
+    }
+
+    function start() {
+        disappear("myCanvas");
+        myCanvas("myCanvas", "img2");
+        createBackground();
+        createBallBall();
+        if (count > 0) {
+            document.getElementById("playButton").disabled = true;
+            setTimeout(start, 1000);
+        } else {
+            document.getElementById("playButton").disabled = false;
+            alert("FINISH! Your point: " + point);
+        }
+    }
+
+    function play() {
+        count = 10;
+        point = 0;
+        document.getElementById("point").innerHTML = point;
+        start();
+        countTime();
+    }
+
+    document.addEventListener("click", function (event) {
+        let toadoX = event.clientX - 311 - arr[ran][0];
+        let toadoY = event.clientY - 80 - arr[ran][1];
+        let distance = Math.sqrt(toadoX * toadoX + toadoY * toadoY);
+        if (distance <= 35 && count > 0) {
+            myCanvas("newCanvas", "img1");
+            point += 1;
+            document.getElementById("point").innerHTML = point;
+        } else {
+            disappear("newCanvas");
+        }
+    });
+
+    // document.addEventListener("click", function (event) {
+    //     console.log(event);
+    // })
+</script>
+
+</body>
+</html>
